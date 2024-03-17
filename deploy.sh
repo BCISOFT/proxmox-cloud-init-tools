@@ -26,10 +26,13 @@ if [ ! -d $IMG_PATH ] ; then
 fi
 
 #URLS - Available compatible cloud-init images to download - Debina 9/10 and Ubuntu 18.04/20.04
+DEBIAN_12_URL="https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.raw"
+DEBIAN_11_URL="https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.raw"
 DEBIAN_10_URL="https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.raw"
 DEBIAN_9_URL="https://cdimage.debian.org/cdimage/openstack/current-9/debian-9-openstack-amd64.raw"
 UBUNTU_1804_URL="https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img"
 UBUNTU_2004_URL="https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img"
+UBUNTU_2204_URL="https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
 OPENSUSE_152_URL="https://download.opensuse.org/repositories/Cloud:/Images:/Leap_15.2/images/openSUSE-Leap-15.2-OpenStack.x86_64.qcow2"
 CENTOS_8_URL="https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2"
 ####
@@ -37,10 +40,13 @@ echo "Available images are: "
 echo -n "
 1 - Debian 9 - Stretch
 2 - Debian 10 - Buster
-3 - Ubuntu 18.04 LTS - Bionic
-4 - Ubuntu 20.04 LTS - Focal
-5 - OpenSUSE LEAP 15.02
-6 - CentOS 8
+3 - Debian 11 - Bullseye
+4 - Debian 12 - Bookworm
+5 - Ubuntu 18.04 LTS - Bionic
+6 - Ubuntu 20.04 LTS - Focal
+7 - Ubuntu 22.04 LTS - Jammy
+8 - OpenSUSE LEAP 15.02
+9 - CentOS 8
 "
 echo -n "Choose a Image template to install: "
 read OPT_IMAGE_TEMPLATE
@@ -50,36 +56,63 @@ case $OPT_IMAGE_TEMPLATE in
 		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${DEBIAN_9_URL##*/}"
 		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
 			wget -c $DEBIAN_9_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
 		fi
 		;;
 	2)
 		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${DEBIAN_10_URL##*/}"
 		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
 			wget -c $DEBIAN_10_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
 		fi
 		;;
 	3)
-		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${UBUNTU_1804_URL##*/}"
+		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${DEBIAN_11_URL##*/}"
 		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
-			wget -c $UBUNTU_1804_URL -O $TEMPLATE_VM_CI_IMAGE
+			wget -c $DEBIAN_11_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
 		fi
 		;;
 	4)
-		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${UBUNTU_2004_URL##*/}"
+		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${DEBIAN_12_URL##*/}"
 		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
-			wget -c $UBUNTU_2004_URL -O $TEMPLATE_VM_CI_IMAGE
+			wget -c $DEBIAN_12_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
 		fi
 		;;
 	5)
-		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${OPENSUSE_152_URL##*/}"
+		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${UBUNTU_1804_URL##*/}"
 		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
-			wget -c $OPENSUSE_152_URL -O $TEMPLATE_VM_CI_IMAGE
+			wget -c $UBUNTU_1804_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
 		fi
 		;;
 	6)
+		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${UBUNTU_2004_URL##*/}"
+		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
+			wget -c $UBUNTU_2004_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
+		fi
+		;;
+	7)
+		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${UBUNTU_2204_URL##*/}"
+		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
+			wget -c $UBUNTU_2204_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
+		fi
+		;;
+	8)
+		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${OPENSUSE_152_URL##*/}"
+		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
+			wget -c $OPENSUSE_152_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
+		fi
+		;;
+	9)
 		TEMPLATE_VM_CI_IMAGE="$IMG_PATH/${CENTOS_8_URL##*/}"
 		if [ ! -f $TEMPLATE_VM_CI_IMAGE ]; then
 			wget -c $CENTOS_8_URL -O $TEMPLATE_VM_CI_IMAGE
+			virt-customize -a $TEMPLATE_VM_CI_IMAGE --install qemu-guest-agent
 		fi
 		;;
 	*)
@@ -129,10 +162,10 @@ case $TEMPLATE_VM_MEMORY_GB in
                 ;;
 esac
 ### VM Cores
-echo -n "Type # of VM CPU Cores: (Example: 2)"
+echo -n "Type # of VM CPU Cores: (Example: 2): "
 read TEMPLATE_VM_CORES
 ### VM Sockets
-echo -n "Type # of VM CPU Sockets: (Example: 1)"
+echo -n "Type # of VM CPU Sockets: (Example: 1): "
 read TEMPLATE_VM_SOCKETS
 
 ### VM Storage
@@ -144,18 +177,28 @@ pvesm status|grep active|awk '{ printf "%-20s %-40s\n", $1, $7 }'
 echo -n "Type name of Storage to install VM: "
 read TEMPLATE_VM_STORAGE
 
-### VM Default user
-clear
-echo "######### USER INFORMATION ##########"
-echo "This tool create user root as default!"
-echo "If you would like to use non-root account, please define username and use sudo when login."
-echo "If you will use root, just type root or keep it empty."
-echo -n "type new username: "
-read TEMPLATE_DEFAULT_USER
-# Check username - then define as root if empty
-if [ -z $TEMPLATE_DEFAULT_USERNAME ] ; then
-	TEMPLATE_DEFAULT_USERNAME="root"
+### VM Disk Size
+echo ""
+echo -n "Type VM disk size, 2G mini [MGT] (Example: 20G): "
+read TEMPLATE_VM_DISKSIZE
+if [ -z $TEMPLATE_VM_DISKSIZE ] ; then
+       TEMPLATE_VM_DISKSIZE="20G"
 fi
+
+### VM Default user
+#clear
+#echo "######### USER INFORMATION ##########"
+#echo "This tool create user root as default!"
+#echo "If you would like to use non-root account, please define username and use sudo when login."
+#echo "If you will use root, just type root or keep it empty."
+#echo -n "type new username: "
+#read TEMPLATE_DEFAULT_USER
+## Check username - then define as root if empty
+#if [ -z $TEMPLATE_DEFAULT_USER ] ; then
+#	TEMPLATE_DEFAULT_USER="root"
+#fi
+TEMPLATE_DEFAULT_USER="bcisoft"
+
 #### Network
 clear
 echo "########## NETWORK ##########"
@@ -175,7 +218,7 @@ echo "Use DHCP?"
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) DHCP_USE="Y"; break;;
-        No ) echo "";;
+        No ) DHCP_USE="N"; break;;
     esac
 done
 if [ $DHCP_USE != "Y" ] ;then
@@ -208,6 +251,7 @@ echo Cores: $TEMPLATE_VM_CORES
 echo Sockets: $TEMPLATE_VM_SOCKETS
 echo Template Image: $TEMPLATE_VM_CI_IMAGE
 echo Storage: $TEMPLATE_VM_STORAGE
+echo Disk size: $TEMPLATE_VM_DISKSIZE
 echo User: $TEMPLATE_DEFAULT_USER
 echo Attached Bridge: $TEMPLATE_VM_BRIDGE
 echo IP Address/Network: $TEMPLATE_VM_IP
@@ -261,7 +305,8 @@ qm importdisk $TEMPLATE_VM_ID $TEMPLATE_VM_CI_IMAGE $TEMPLATE_VM_STORAGE > /dev/
 check_errors
 
 ACTION="Set disk controller and image"
-qm set $TEMPLATE_VM_ID --scsihw virtio-scsi-pci --scsi0 $TEMPLATE_VM_STORAGE:$TEMPLATE_VM_ID/vm-$TEMPLATE_VM_ID-disk-0.raw > /dev/null 2>&1
+#qm set $TEMPLATE_VM_ID --scsihw virtio-scsi-pci --scsi0 $TEMPLATE_VM_STORAGE:$TEMPLATE_VM_ID/vm-$TEMPLATE_VM_ID-disk-0.raw > /dev/null 2>&1
+qm set $TEMPLATE_VM_ID --scsihw virtio-scsi-single --scsi0 $TEMPLATE_VM_STORAGE:$TEMPLATE_VM_ID/vm-$TEMPLATE_VM_ID-disk-0.raw,cache=writethrough > /dev/null 2>&1
 check_errors
 
 ACTION="Set serial socket"
@@ -281,23 +326,44 @@ qm set $TEMPLATE_VM_ID --hotplug disk,network,usb,memory,cpu > /dev/null 2>&1
 check_errors
 
 ACTION="Set vga display"
-qm set $TEMPLATE_VM_ID --vga qxl > /dev/null 2>&1
+#qm set $TEMPLATE_VM_ID --vga qxl > /dev/null 2>&1
+qm set $TEMPLATE_VM_ID --vga std > /dev/null 2>&1
+#qm set $TEMPLATE_VM_ID --vga serial0 > /dev/null 2>&1
 check_errors
 
-ACTION="Set machine type"
-qm set $TEMPLATE_VM_ID --machine q35 > /dev/null 2>&1
+ACTION="Set tablet mode off"
+qm set $TEMPLATE_VM_ID --tablet 0 > /dev/null 2>&1
 check_errors
+
+ACTION="Set start on boot"
+qm set $TEMPLATE_VM_ID --onboot 1  > /dev/null 2>&1
+check_errors
+
+#ACTION="Set machine type"
+#qm set $TEMPLATE_VM_ID --machine q35 > /dev/null 2>&1
+#check_errors
 
 ACTION="Set name to $TEMPLATE_VM_NAME"
 qm set $TEMPLATE_VM_ID --name $TEMPLATE_VM_NAME > /dev/null 2>&1
 check_errors
 
 ACTION="Set default user to $TEMPLATE_DEFAULT_USER"
-qm set $TEMPLATE_VM_ID --ciuser $TEMPLATE_DEFAULT_USER > /dev/null 2>&1
+#qm set $TEMPLATE_VM_ID --ciuser $TEMPLATE_DEFAULT_USER > /dev/null 2>&1
+qm set $TEMPLATE_VM_ID --ciuser "root" > /dev/null 2>&1
 check_errors
 
-ACTION="Set image size to 20GB"
-qm resize $TEMPLATE_VM_ID scsi0 +17748M > /dev/null 2>&1
+#ACTION="Set default password"
+#qm set $TEMPLATE_VM_ID --cipassword "bidochon" > /dev/null 2>&1
+#check_errors
+
+#ACTION="Enable password auth"
+#qm set $TEMPLATE_VM_ID --cicustom "user=local:snippets/cipassword.yaml"
+#check_errors
+
+ACTION="Set image size to $TEMPLATE_VM_DISKSIZE"
+#qm resize $TEMPLATE_VM_ID scsi0 +17748M > /dev/null 2>&1
+#qm resize $TEMPLATE_VM_ID scsi0 20G > /dev/null 2>&1
+qm resize $TEMPLATE_VM_ID scsi0 "$TEMPLATE_VM_DISKSIZE" > /dev/null 2>&1
 check_errors
 
 #Cloud INIT
