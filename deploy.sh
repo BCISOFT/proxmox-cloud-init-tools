@@ -186,18 +186,17 @@ if [ -z $TEMPLATE_VM_DISKSIZE ] ; then
 fi
 
 ### VM Default user
-#clear
-#echo "######### USER INFORMATION ##########"
-#echo "This tool create user root as default!"
-#echo "If you would like to use non-root account, please define username and use sudo when login."
-#echo "If you will use root, just type root or keep it empty."
-#echo -n "type new username: "
-#read TEMPLATE_DEFAULT_USER
-## Check username - then define as root if empty
-#if [ -z $TEMPLATE_DEFAULT_USER ] ; then
-#	TEMPLATE_DEFAULT_USER="root"
-#fi
-TEMPLATE_DEFAULT_USER="bcisoft"
+clear
+echo "######### USER INFORMATION ##########"
+echo "This tool create user root as default!"
+echo "If you would like to use non-root account, please define username and use sudo when login."
+echo "If you will use root, just type root or keep it empty."
+echo -n "type new username: "
+read TEMPLATE_DEFAULT_USER
+# Check username - then define as root if empty
+if [ -z $TEMPLATE_DEFAULT_USER ] ; then
+	TEMPLATE_DEFAULT_USER="root"
+fi
 
 #### Network
 clear
@@ -348,8 +347,8 @@ qm set $TEMPLATE_VM_ID --name $TEMPLATE_VM_NAME > /dev/null 2>&1
 check_errors
 
 ACTION="Set default user to $TEMPLATE_DEFAULT_USER"
-#qm set $TEMPLATE_VM_ID --ciuser $TEMPLATE_DEFAULT_USER > /dev/null 2>&1
-qm set $TEMPLATE_VM_ID --ciuser "root" > /dev/null 2>&1
+qm set $TEMPLATE_VM_ID --ciuser $TEMPLATE_DEFAULT_USER > /dev/null 2>&1
+#qm set $TEMPLATE_VM_ID --ciuser "root" > /dev/null 2>&1
 check_errors
 
 #ACTION="Set default password"
