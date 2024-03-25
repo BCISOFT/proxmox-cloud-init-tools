@@ -26,13 +26,16 @@ if [ ! -d $IMG_PATH ] ; then
 fi
 
 #URLS - Available compatible cloud-init images to download - Debina 9/10 and Ubuntu 18.04/20.04
-DEBIAN_12_URL="https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.raw"
-DEBIAN_11_URL="https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.raw"
-DEBIAN_10_URL="https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.raw"
+DEBIAN_12_URL="https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2"
+DEBIAN_11_URL="https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2"
+#DEBIAN_10_URL="https://cdimage.debian.org/cdimage/openstack/current-10/debian-10-openstack-amd64.qcow2"
+DEBIAN_10_URL="https://cloud.debian.org/images/cloud/buster/latest/debian-10-generic-amd64.qcow2"
 DEBIAN_9_URL="https://cdimage.debian.org/cdimage/openstack/current-9/debian-9-openstack-amd64.raw"
+
 UBUNTU_1804_URL="https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img"
 UBUNTU_2004_URL="https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img"
 UBUNTU_2204_URL="https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+
 OPENSUSE_152_URL="https://download.opensuse.org/repositories/Cloud:/Images:/Leap_15.2/images/openSUSE-Leap-15.2-OpenStack.x86_64.qcow2"
 CENTOS_8_URL="https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.1.1911-20200113.3.x86_64.qcow2"
 ####
@@ -141,7 +144,7 @@ read TEMPLATE_VM_MEMORY_GB
 
 case $TEMPLATE_VM_MEMORY_GB in
 	1)
-	TEMPLATE_VM_MEMORY=1024
+		TEMPLATE_VM_MEMORY=1024
 	;;
 	2)
 		TEMPLATE_VM_MEMORY=2048
@@ -294,9 +297,9 @@ qm create $TEMPLATE_VM_ID \
 	--net0 virtio,bridge=$TEMPLATE_VM_BRIDGE \
 	--cores $TEMPLATE_VM_CORES \
 	--sockets $TEMPLATE_VM_SOCKETS \
-	--cpu cputype=kvm64 \
-	--kvm 1 \
-	--numa 1 > /dev/null 2>&1
+	--kvm 1 > /dev/null 2>&1
+#	--cpu cputype=kvm64 \
+#	--numa 1 > /dev/null 2>&1
 check_errors
 
 ACTION="Import disk"
@@ -321,14 +324,15 @@ qm set $TEMPLATE_VM_ID --agent 1 > /dev/null 2>&1
 check_errors
 
 ACTION="Set hotplug options"
-qm set $TEMPLATE_VM_ID --hotplug disk,network,usb,memory,cpu > /dev/null 2>&1
+#qm set $TEMPLATE_VM_ID --hotplug disk,network,usb,memory,cpu > /dev/null 2>&1
+qm set $TEMPLATE_VM_ID --hotplug disk,network,usb,cpu > /dev/null 2>&1
 check_errors
 
-ACTION="Set vga display"
+#ACTION="Set vga display"
 #qm set $TEMPLATE_VM_ID --vga qxl > /dev/null 2>&1
-qm set $TEMPLATE_VM_ID --vga std > /dev/null 2>&1
+##qm set $TEMPLATE_VM_ID --vga std > /dev/null 2>&1
 #qm set $TEMPLATE_VM_ID --vga serial0 > /dev/null 2>&1
-check_errors
+#check_errors
 
 ACTION="Set tablet mode off"
 qm set $TEMPLATE_VM_ID --tablet 0 > /dev/null 2>&1
